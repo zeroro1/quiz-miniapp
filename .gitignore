@@ -1,0 +1,23 @@
+﻿# uni-app
+unpackage/
+node_modules/
+
+# WeChat miniprogram
+miniprogram_npm/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
