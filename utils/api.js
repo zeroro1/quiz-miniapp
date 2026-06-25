@@ -38,6 +38,9 @@ module.exports = {
 			})
 		})
 	},
+	updateUserInfo: function(userId, nickname, avatar) {
+		return request('/wx/updateUserInfo', 'POST', { userId, nickname, avatar })
+	},
 	startQuiz: function(userId) {
 		return request('/quiz/start', 'POST', { userId })
 	},
