@@ -2,62 +2,62 @@
 import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
 
 onLaunch(() => {
-	console.log('App Launch')
+    console.log('App Launch')
 })
 onShow(() => {
-	console.log('App Show')
+    console.log('App Show')
 })
 onHide(() => {
-	console.log('App Hide')
+    console.log('App Hide')
 })
 </script>
 
 <style>
 page {
-	background-color: #f5f5f5;
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-	color: #333;
+    background-color: #f5f5f5;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #333;
 }
 
 .container {
-	padding: 20rpx;
+    padding: 20rpx;
 }
 
 .card {
-	background: #fff;
-	border-radius: 16rpx;
-	padding: 30rpx;
-	margin-bottom: 20rpx;
-	box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.08);
+    background: #fff;
+    border-radius: 16rpx;
+    padding: 30rpx;
+    margin-bottom: 20rpx;
+    box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.08);
 }
 
 .btn-primary {
-	background: linear-gradient(135deg, #4CAF50, #66BB6A);
-	color: #fff;
-	border: none;
-	border-radius: 12rpx;
-	padding: 24rpx 48rpx;
-	font-size: 32rpx;
-	text-align: center;
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: #fff;
+    border: none;
+    border-radius: 12rpx;
+    padding: 24rpx 48rpx;
+    font-size: 32rpx;
+    text-align: center;
 }
 
 .btn-primary::after {
-	border: none;
+    border: none;
 }
 
 .text-center {
-	text-align: center;
+    text-align: center;
 }
 
 .mt-20 {
-	margin-top: 20rpx;
+    margin-top: 20rpx;
 }
 
 .mb-20 {
-	margin-bottom: 16rpx;
+    margin-bottom: 16rpx;
 }
 
 .mt-40 {
-	margin-top: 40rpx;
+    margin-top: 40rpx;
 }
 </style>
