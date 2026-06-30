@@ -12,29 +12,29 @@
 			<view class="rank-item" v-for="item in leaderboard" :key="item.userId">
 				<view class="rank-num" :class="{ top3: item.rank <= 3 }">{{ item.rank }}</view>
 				<view class="rank-info">
-					<text class="rank-name">{{ item.nickname || '匿名用户' }}</text>
+					<text class="rank-name">{{ item.nickname || '鍖垮悕鐢ㄦ埛' }}</text>
 					<view class="rank-stats">
-						<text class="stat">正确率 {{ item.accuracy }}%</text>
-						<text class="stat">平均 {{ item.avgTime.toFixed(1) }}s/题</text>
+						<text class="stat">姝ｇ‘鐜?{{ item.accuracy }}%</text>
+						<text class="stat">骞冲潎 {{ item.avgTime.toFixed(1) }}s/棰?/text>
 					</view>
 				</view>
 			</view>
 		</view>
 
 		<view class="empty" v-if="!loading && leaderboard.length === 0">
-			<text>暂无数据，快来答题吧！</text>
+			<text>鏆傛棤鏁版嵁锛屽揩鏉ョ瓟棰樺惂锛?/text>
 		</view>
 	</view>
 </template>
 
 <script setup>
 import { ref, onShow } from 'vue'
-import api from '@/utils/api.js'
+import { login, updateUserInfo, startQuiz, submitAnswers, getLeaderboard, getUserRecords } from '@/utils/api.js'
 
 const activeTab = ref('COMMONSENSE')
 const tabs = [
-	{ key: 'COMMONSENSE', label: '📚 常识排行' },
-	{ key: 'LOGIC', label: '🧩 逻辑排行' }
+	{ key: 'COMMONSENSE', label: '馃摎 甯歌瘑鎺掕' },
+	{ key: 'LOGIC', label: '馃З 閫昏緫鎺掕' }
 ]
 const leaderboard = ref([])
 const loading = ref(false)
@@ -54,7 +54,7 @@ function loadLeaderboard() {
 		leaderboard.value = data
 		loading.value = false
 	}).catch(err => {
-		uni.showToast({ title: '加载失败', icon: 'none' })
+		uni.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
 		loading.value = false
 	})
 }

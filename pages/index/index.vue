@@ -6,42 +6,42 @@
 		</view>
 		<view class="header" v-else>
 			<view class="login-area">
-				<text class="welcome-text">欢迎来到知识问答</text>
-				<button class="btn-login" @click="onLogin" :loading="loginLoading">微信登录</button>
+				<text class="welcome-text">娆㈣繋鏉ュ埌鐭ヨ瘑闂瓟</text>
+				<button class="btn-login" @click="onLogin" :loading="loginLoading">寰俊鐧诲綍</button>
 			</view>
 		</view>
 		<view class="cards mt-40" v-if="isLoggedIn">
 			<view class="card" @click="onStartQuiz">
 				<view class="card-icon">&#x1F3AF;</view>
 				<view class="card-content">
-					<text class="card-title">开始答题</text>
-					<text class="card-desc">AI出题 · 10道精选题目 · 每题15秒</text>
+					<text class="card-title">寮€濮嬬瓟棰?/text>
+					<text class="card-desc">AI鍑洪 路 10閬撶簿閫夐鐩?路 姣忛15绉?/text>
 				</view>
 			</view>
 			<view class="card" @click="onStartQuiz">
 				<view class="card-icon">&#x1F4DA;</view>
 				<view class="card-content">
-					<text class="card-title">常识问答</text>
-					<text class="card-desc">生活常识、历史地理</text>
+					<text class="card-title">甯歌瘑闂瓟</text>
+					<text class="card-desc">鐢熸椿甯歌瘑銆佸巻鍙插湴鐞?/text>
 				</view>
 			</view>
 			<view class="card" @click="onStartQuiz">
 				<view class="card-icon">&#x1F9EA;</view>
 				<view class="card-content">
-					<text class="card-title">逻辑推理</text>
-					<text class="card-desc">找规律、智力测试</text>
+					<text class="card-title">閫昏緫鎺ㄧ悊</text>
+					<text class="card-desc">鎵捐寰嬨€佹櫤鍔涙祴璇?/text>
 				</view>
 			</view>
 		</view>
 		<view class="footer mt-40" v-if="isLoggedIn">
-			<text class="footer-text">每次答题包含 5道常识 + 5道逻辑推理</text>
+			<text class="footer-text">姣忔绛旈鍖呭惈 5閬撳父璇?+ 5閬撻€昏緫鎺ㄧ悊</text>
 		</view>
 	</view>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import api from '@/utils/api.js'
+import { login, updateUserInfo, startQuiz, submitAnswers, getLeaderboard, getUserRecords } from '@/utils/api.js'
 
 const userInfo = ref(null)
 const userId = ref(null)
@@ -70,23 +70,23 @@ function onLogin() {
 			api.login().then(data => {
 				app.globalData.userId = data.userId
 				app.globalData.userInfo = {
-					nickname: data.nickname || '用户',
+					nickname: data.nickname || '鐢ㄦ埛',
 					avatar: data.avatar || ''
 				}
 				userId.value = data.userId
 				userInfo.value = app.globalData.userInfo
 				isLoggedIn.value = true
 				loginLoading.value = false
-				uni.showToast({ title: '登录成功', icon: 'success' })
+				uni.showToast({ title: '鐧诲綍鎴愬姛', icon: 'success' })
 			}).catch(err => {
 				loginLoading.value = false
-				uni.showToast({ title: '登录失败', icon: 'none' })
+				uni.showToast({ title: '鐧诲綍澶辫触', icon: 'none' })
 				console.error(err)
 			})
 		},
 		fail: (err) => {
 			loginLoading.value = false
-			uni.showToast({ title: '登录失败', icon: 'none' })
+			uni.showToast({ title: '鐧诲綍澶辫触', icon: 'none' })
 			console.error(err)
 		}
 	})
@@ -94,7 +94,7 @@ function onLogin() {
 
 function onStartQuiz() {
 	if (!isLoggedIn.value) {
-		uni.showToast({ title: '请先登录', icon: 'none' })
+		uni.showToast({ title: '璇峰厛鐧诲綍', icon: 'none' })
 		return
 	}
 	uni.navigateTo({ url: '/pages/quiz/quiz' })

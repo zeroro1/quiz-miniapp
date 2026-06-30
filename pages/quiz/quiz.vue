@@ -1,14 +1,14 @@
 <template>
 	<view class="container">
 		<view class="loading" v-if="loading">
-			<text>AI 正在出题...</text>
+			<text>AI 姝ｅ湪鍑洪...</text>
 		</view>
 
 		<view v-else-if="!showResult">
 			<view class="top-bar">
 				<view class="progress-info">
-					<text>第 {{ currentIndex + 1 }} / {{ questions.length }} 题</text>
-					<text class="timer-text" :class="{ 'timer-warning': timeLeft <= 5 }">⏱ {{ timeLeft }}s</text>
+					<text>绗?{{ currentIndex + 1 }} / {{ questions.length }} 棰?/text>
+					<text class="timer-text" :class="{ 'timer-warning': timeLeft <= 5 }">鈴?{{ timeLeft }}s</text>
 				</view>
 				<view class="progress-track">
 					<view class="progress-fill" :style="{ width: ((currentIndex + 1) / questions.length * 100) + '%' }"></view>
@@ -17,7 +17,7 @@
 
 			<view class="card question-card">
 				<view class="question-tag" :class="currentQuestion.type === 'COMMONSENSE' ? 'tag-commonsense' : 'tag-logic'">
-					{{ currentQuestion.type === 'COMMONSENSE' ? '📚 常识' : '🧩 逻辑' }}
+					{{ currentQuestion.type === 'COMMONSENSE' ? '馃摎 甯歌瘑' : '馃З 閫昏緫' }}
 				</view>
 				<text class="question-text">{{ currentQuestion.content }}</text>
 			</view>
@@ -32,48 +32,48 @@
 			</view>
 
 			<view class="nav-buttons">
-				<button class="btn-nav" @click="onPrev" :disabled="currentIndex === 0">上一题</button>
-				<button class="btn-nav" @click="onNext" :disabled="currentIndex === questions.length - 1">下一题</button>
+				<button class="btn-nav" @click="onPrev" :disabled="currentIndex === 0">涓婁竴棰?/button>
+				<button class="btn-nav" @click="onNext" :disabled="currentIndex === questions.length - 1">涓嬩竴棰?/button>
 			</view>
 		</view>
 
 		<view class="result-page" v-if="showResult && result">
 			<view class="score-circle">
 				<text class="score-number">{{ result.accuracy.toFixed(1) }}%</text>
-				<text class="score-label">正确率</text>
+				<text class="score-label">姝ｇ‘鐜?/text>
 			</view>
 
 			<view class="result-details card">
 				<view class="detail-row">
-					<text>总题数</text>
+					<text>鎬婚鏁?/text>
 					<text>{{ result.totalQuestions }}</text>
 				</view>
 				<view class="detail-row">
-					<text>正确数</text>
+					<text>姝ｇ‘鏁?/text>
 					<text>{{ result.correctCount }}</text>
 				</view>
 				<view class="detail-row">
-					<text>总用时</text>
-					<text>{{ result.totalTime }}秒</text>
+					<text>鎬荤敤鏃?/text>
+					<text>{{ result.totalTime }}绉?/text>
 				</view>
 			</view>
 
 			<view class="answer-detail" v-for="(item, idx) in result.details" :key="idx">
 				<view class="detail-header" :class="item.isCorrect ? 'correct' : 'wrong'">
-					<text>{{ item.isCorrect ? '✅' : '❌' }} 第{{ item.questionIndex + 1 }}题</text>
+					<text>{{ item.isCorrect ? '鉁? : '鉂? }} 绗瑊{ item.questionIndex + 1 }}棰?/text>
 				</view>
 				<text class="detail-question">{{ item.content }}</text>
-				<text class="detail-answer">你的答案: {{ item.userAnswer }} | 正确答案: {{ item.correctAnswer }} | 用时: {{ item.timeTaken }}s</text>
+				<text class="detail-answer">浣犵殑绛旀: {{ item.userAnswer }} | 姝ｇ‘绛旀: {{ item.correctAnswer }} | 鐢ㄦ椂: {{ item.timeTaken }}s</text>
 			</view>
 
-			<button class="btn-restart" @click="onRestart">再来一局</button>
+			<button class="btn-restart" @click="onRestart">鍐嶆潵涓€灞€</button>
 		</view>
 	</view>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import api from '@/utils/api.js'
+import { login, updateUserInfo, startQuiz, submitAnswers, getLeaderboard, getUserRecords } from '@/utils/api.js'
 
 const questions = ref([])
 const optionKeys = ['A', 'B', 'C', 'D']
@@ -110,7 +110,7 @@ function startNewQuiz() {
 		loading.value = false
 		startTimer()
 	}).catch(err => {
-		uni.showToast({ title: '加载失败', icon: 'none' })
+		uni.showToast({ title: '鍔犺浇澶辫触', icon: 'none' })
 		loading.value = false
 	})
 }
@@ -179,7 +179,7 @@ function submitQuiz() {
 		result.value = res
 		showResult.value = true
 	}).catch(err => {
-		uni.showToast({ title: '提交失败', icon: 'none' })
+		uni.showToast({ title: '鎻愪氦澶辫触', icon: 'none' })
 	})
 }
 
