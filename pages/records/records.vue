@@ -1,53 +1,48 @@
-﻿<template>
-	<view class=\"container\">
-		<view class=\"title\">我的答题记录</view>
+<template>
+	<view class="container">
+		<view class="title">我的答题记录</view>
 
-		<view class=\"record-item\" v-for=\"(item, idx) in records\" :key=\"idx\">
-			<view class=\"record-header\" :class=\"item.isCorrect ? 'correct' : 'wrong'\">
+		<view class="record-item" v-for="(item, idx) in records" :key="idx">
+			<view class="record-header" :class="item.isCorrect ? 'correct' : 'wrong'">
 				<text>{{ item.isCorrect ? '✅ 正确' : '❌ 错误' }}</text>
 				<text>{{ item.type === 'COMMONSENSE' ? '📚 常识' : '🧩 逻辑' }}</text>
 			</view>
-			<text class=\"record-question\">{{ item.content }}</text>
-			<text class=\"record-answer\">你的答案: {{ item.userAnswer }} | 正确: {{ item.correctAnswer }} | 用时: {{ item.timeTaken }}s</text>
+			<text class="record-question">{{ item.content }}</text>
+			<text class="record-answer">你的答案: {{ item.userAnswer }} | 正确: {{ item.correctAnswer }} | 用时: {{ item.timeTaken }}s</text>
 		</view>
 
-		<view class=\"empty\" v-if=\"!loading && records.length === 0\">
+		<view class="empty" v-if="!loading && records.length === 0">
 			<text>还没有答题记录哦～</text>
 		</view>
 	</view>
 </template>
 
-<script>
+<script setup>
+import { ref, onShow } from 'vue'
 import api from '@/utils/api.js'
 
-export default {
-	data() {
-		return {
-			records: [],
-			loading: false
-		}
-	},
-	onShow() {
-		this.loadRecords()
-	},
-	methods: {
-		loadRecords() {
-			const app = getApp()
-			const userId = app.globalData.userId
-			if (!userId) {
-				uni.showToast({ title: '请先登录', icon: 'none' })
-				return
-			}
-			this.loading = true
-			api.getUserRecords(userId).then(data => {
-				this.records = data
-				this.loading = false
-			}).catch(err => {
-				uni.showToast({ title: '加载失败', icon: 'none' })
-				this.loading = false
-			})
-		}
+const records = ref([])
+const loading = ref(false)
+
+onShow(() => {
+	loadRecords()
+})
+
+function loadRecords() {
+	const app = getApp()
+	const userId = app.globalData.userId
+	if (!userId) {
+		uni.showToast({ title: '请先登录', icon: 'none' })
+		return
 	}
+	loading.value = true
+	api.getUserRecords(userId).then(data => {
+		records.value = data
+		loading.value = false
+	}).catch(err => {
+		uni.showToast({ title: '加载失败', icon: 'none' })
+		loading.value = false
+	})
 }
 </script>
 

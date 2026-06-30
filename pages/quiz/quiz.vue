@@ -1,32 +1,27 @@
-﻿<template>
+<template>
 	<view class="container">
-		<!-- 加载中 -->
 		<view class="loading" v-if="loading">
 			<text>AI 正在出题...</text>
 		</view>
 
-		<!-- 答题区域 -->
 		<view v-else-if="!showResult">
-			<!-- 顶部栏 -->
 			<view class="top-bar">
 				<view class="progress-info">
-					<text>第 {{ currentIndex + 1 }}/{{ questions.length }}</text>
-					<text class="timer-text" :class="{ timer-warning: timeLeft <= 5 }">⏱ {{ timeLeft }}s</text>
+					<text>第 {{ currentIndex + 1 }} / {{ questions.length }} 题</text>
+					<text class="timer-text" :class="{ 'timer-warning': timeLeft <= 5 }">⏱ {{ timeLeft }}s</text>
 				</view>
 				<view class="progress-track">
 					<view class="progress-fill" :style="{ width: ((currentIndex + 1) / questions.length * 100) + '%' }"></view>
 				</view>
 			</view>
 
-			<!-- 题目 -->
 			<view class="card question-card">
-				<view class="question-tag" :class="question.type === 'COMMONSENSE' ? 'tag-commonsense' : 'tag-logic'">
-					{{ question.type === 'COMMONSENSE' ? '📚 常识' : '🧩 逻辑' }}
+				<view class="question-tag" :class="currentQuestion.type === 'COMMONSENSE' ? 'tag-commonsense' : 'tag-logic'">
+					{{ currentQuestion.type === 'COMMONSENSE' ? '📚 常识' : '🧩 逻辑' }}
 				</view>
-				<text class="question-text">{{ question.content }}</text>
+				<text class="question-text">{{ currentQuestion.content }}</text>
 			</view>
 
-			<!-- 选项 -->
 			<view class="options">
 				<view class="option" v-for="opt in optionKeys" :key="opt"
 				      @click="onAnswer(opt)"
@@ -36,14 +31,12 @@
 				</view>
 			</view>
 
-			<!-- 导航按钮 -->
 			<view class="nav-buttons">
 				<button class="btn-nav" @click="onPrev" :disabled="currentIndex === 0">上一题</button>
-				<button class="btn-nav btn-next" @click="onNext" :disabled="currentIndex === questions.length - 1">下一题</button>
+				<button class="btn-nav" @click="onNext" :disabled="currentIndex === questions.length - 1">下一题</button>
 			</view>
 		</view>
 
-		<!-- 结果页面 -->
 		<view class="result-page" v-if="showResult && result">
 			<view class="score-circle">
 				<text class="score-number">{{ result.accuracy.toFixed(1) }}%</text>
@@ -65,7 +58,6 @@
 				</view>
 			</view>
 
-			<!-- 每题详情 -->
 			<view class="answer-detail" v-for="(item, idx) in result.details" :key="idx">
 				<view class="detail-header" :class="item.isCorrect ? 'correct' : 'wrong'">
 					<text>{{ item.isCorrect ? '✅' : '❌' }} 第{{ item.questionIndex + 1 }}题</text>
@@ -79,125 +71,120 @@
 	</view>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '@/utils/api.js'
 
-export default {
-	data() {
-		return {
-			questions: [],
-			optionKeys: ['A', 'B', 'C', 'D'],
-			currentIndex: 0,
-			answers: [],
-			timesTaken: [],
-			loading: false,
-			showResult: false,
-			result: null,
-			sessionId: null,
-			timeLeft: 15,
-			timer: null
+const questions = ref([])
+const optionKeys = ['A', 'B', 'C', 'D']
+const currentIndex = ref(0)
+const answers = ref([])
+const timesTaken = ref([])
+const loading = ref(false)
+const showResult = ref(false)
+const result = ref(null)
+const sessionId = ref(null)
+const timeLeft = ref(15)
+const timer = ref(null)
+
+const currentQuestion = computed(() => questions.value[currentIndex.value] || {})
+
+onMounted(() => {
+	startNewQuiz()
+})
+
+onUnmounted(() => {
+	clearTimer()
+})
+
+function startNewQuiz() {
+	loading.value = true
+	showResult.value = false
+	const app = getApp()
+	api.startQuiz(app.globalData.userId).then(data => {
+		questions.value = data.questions
+		sessionId.value = data.sessionId
+		currentIndex.value = 0
+		answers.value = new Array(data.questions.length).fill('')
+		timesTaken.value = new Array(data.questions.length).fill(0)
+		loading.value = false
+		startTimer()
+	}).catch(err => {
+		uni.showToast({ title: '加载失败', icon: 'none' })
+		loading.value = false
+	})
+}
+
+function startTimer() {
+	clearTimer()
+	timeLeft.value = 15
+	timer.value = setInterval(() => {
+		timeLeft.value--
+		if (timeLeft.value <= 0) {
+			clearTimer()
+			if (currentIndex.value < questions.value.length - 1) {
+				onNext()
+			} else {
+				submitQuiz()
+			}
 		}
-	},
-	computed: {
-		question() {
-			return this.questions[this.currentIndex] || {}
-		}
-	},
-	onLoad() {
-		this.startNewQuiz()
-	},
-	onUnload() {
-		this.clearTimer()
-	},
-	beforeDestroy() {
-		this.clearTimer()
-	},
-	methods: {
-		startNewQuiz() {
-			this.loading = true
-			this.showResult = false
-			const app = getApp()
-			api.startQuiz(app.globalData.userId).then(data => {
-				this.questions = data.questions
-				this.sessionId = data.sessionId
-				this.currentIndex = 0
-				this.answers = new Array(data.questions.length).fill('')
-				this.timesTaken = new Array(data.questions.length).fill(0)
-				this.loading = false
-				this.startTimer()
-			}).catch(err => {
-				uni.showToast({ title: '加载失败', icon: 'none' })
-				this.loading = false
-			})
-		},
-		startTimer() {
-			this.clearTimer()
-			this.timeLeft = 15
-			this.timer = setInterval(() => {
-				this.timeLeft--
-				if (this.timeLeft <= 0) {
-					this.clearTimer()
-					if (this.currentIndex < this.questions.length - 1) {
-						this.onNext()
-					} else {
-						this.submitQuiz()
-					}
-				}
-			}, 1000)
-		},
-		clearTimer() {
-			if (this.timer) {
-				clearInterval(this.timer)
-				this.timer = null
-			}
-		},
-		getOptionContent(key) {
-			return this.question['option' + key] || ''
-		},
-		onPrev() {
-			if (this.currentIndex > 0) {
-				this.timesTaken[this.currentIndex] = 15 - this.timeLeft
-				this.currentIndex--
-				this.startTimer()
-			}
-		},
-		onNext() {
-			if (this.currentIndex < this.questions.length - 1) {
-				this.timesTaken[this.currentIndex] = 15 - this.timeLeft
-				this.currentIndex++
-				this.startTimer()
-			}
-		},
-		onAnswer(answer) {
-			this.answers[this.currentIndex] = answer
-		},
-		submitQuiz() {
-			this.clearTimer()
-			this.timesTaken[this.currentIndex] = 15 - this.timeLeft
-			const app = getApp()
-			const request = {
-				sessionId: this.sessionId,
-				userId: app.globalData.userId,
-				answers: this.questions.map((q, i) => ({
-					questionIndex: i,
-					answer: this.answers[i] || '',
-					timeTaken: this.timesTaken[i] || 15
-				}))
-			}
-			api.submitAnswers(request).then(result => {
-				this.result = result
-				this.showResult = true
-			}).catch(err => {
-				uni.showToast({ title: '提交失败', icon: 'none' })
-			})
-		},
-		onSubmit() {
-			this.submitQuiz()
-		},
-		onRestart() {
-			this.startNewQuiz()
-		}
+	}, 1000)
+}
+
+function clearTimer() {
+	if (timer.value) {
+		clearInterval(timer.value)
+		timer.value = null
 	}
+}
+
+function getOptionContent(key) {
+	return currentQuestion.value['option' + key] || ''
+}
+
+function onPrev() {
+	if (currentIndex.value > 0) {
+		timesTaken.value[currentIndex.value] = 15 - timeLeft.value
+		currentIndex.value--
+		startTimer()
+	}
+}
+
+function onNext() {
+	if (currentIndex.value < questions.value.length - 1) {
+		timesTaken.value[currentIndex.value] = 15 - timeLeft.value
+		currentIndex.value++
+		startTimer()
+	}
+}
+
+function onAnswer(answer) {
+	answers.value[currentIndex.value] = answer
+}
+
+function submitQuiz() {
+	clearTimer()
+	timesTaken.value[currentIndex.value] = 15 - timeLeft.value
+	const app = getApp()
+	const request = {
+		sessionId: sessionId.value,
+		userId: app.globalData.userId,
+		answers: questions.value.map((q, i) => ({
+			questionIndex: i,
+			answer: answers.value[i] || '',
+			timeTaken: timesTaken.value[i] || 15
+		}))
+	}
+	api.submitAnswers(request).then(res => {
+		result.value = res
+		showResult.value = true
+	}).catch(err => {
+		uni.showToast({ title: '提交失败', icon: 'none' })
+	})
+}
+
+function onRestart() {
+	startNewQuiz()
 }
 </script>
 

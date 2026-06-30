@@ -18,7 +18,5 @@
             "subPackages": true
         }
     },
-    "uniRouter": {
-        "lazyLoad": true
-    }
+    "vueVersion": "3"
 }

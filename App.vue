@@ -1,15 +1,15 @@
-﻿<script>
-export default {
-	onLaunch: function() {
-		console.log('App Launch')
-	},
-	onShow: function() {
-		console.log('App Show')
-	},
-	onHide: function() {
-		console.log('App Hide')
-	}
-}
+<script setup>
+import { onLaunch, onShow, onHide } from '@dcloudio/uni-app'
+
+onLaunch(() => {
+	console.log('App Launch')
+})
+onShow(() => {
+	console.log('App Show')
+})
+onHide(() => {
+	console.log('App Hide')
+})
 </script>
 
 <style>
@@ -54,7 +54,7 @@ page {
 }
 
 .mb-20 {
-	margin-bottom: 20rpx;
+	margin-bottom: 16rpx;
 }
 
 .mt-40 {

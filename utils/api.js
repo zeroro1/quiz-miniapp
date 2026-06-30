@@ -1,4 +1,4 @@
-﻿const BASE_URL = 'http://localhost:8080/api'
+const BASE_URL = 'http://localhost:8080/api'
 
 function request(url, method, data) {
 	return new Promise((resolve, reject) => {
@@ -23,34 +23,36 @@ function request(url, method, data) {
 	})
 }
 
-module.exports = {
-	request,
-	login: function() {
-		return new Promise((resolve, reject) => {
-			uni.login({
-				provider: 'weixin',
-				success: (res) => {
-					request('/wx/login', 'POST', { code: res.code })
-						.then(data => resolve(data))
-						.catch(reject)
-				},
-				fail: reject
-			})
+export function login() {
+	return new Promise((resolve, reject) => {
+		uni.login({
+			provider: 'weixin',
+			success: (res) => {
+				request('/wx/login', 'POST', { code: res.code })
+					.then(data => resolve(data))
+					.catch(reject)
+			},
+			fail: reject
 		})
-	},
-	updateUserInfo: function(userId, nickname, avatar) {
-		return request('/wx/updateUserInfo', 'POST', { userId, nickname, avatar })
-	},
-	startQuiz: function(userId) {
-		return request('/quiz/start', 'POST', { userId })
-	},
-	submitAnswers: function(data) {
-		return request('/quiz/submit', 'POST', data)
-	},
-	getLeaderboard: function(type) {
-		return request('/leaderboard/' + type, 'GET')
-	},
-	getUserRecords: function(userId) {
-		return request('/user/records?userId=' + userId, 'GET')
-	}
+	})
+}
+
+export function updateUserInfo(userId, nickname, avatar) {
+	return request('/wx/updateUserInfo', 'POST', { userId, nickname, avatar })
+}
+
+export function startQuiz(userId) {
+	return request('/quiz/start', 'POST', { userId })
+}
+
+export function submitAnswers(data) {
+	return request('/quiz/submit', 'POST', data)
+}
+
+export function getLeaderboard(type) {
+	return request('/leaderboard/' + type, 'GET')
+}
+
+export function getUserRecords(userId) {
+	return request('/user/records?userId=' + userId, 'GET')
 }

@@ -1,68 +1,62 @@
-﻿<template>
-	<view class=\"container\">
-		<!-- Tab 切换 -->
-		<view class=\"tabs\">
-			<view class=\"tab\" v-for=\"item in tabs\" :key=\"item.key\"
-			      :class=\"{ active: activeTab === item.key }\"
-			      @click=\"onTabChange(item.key)\">
+<template>
+	<view class="container">
+		<view class="tabs">
+			<view class="tab" v-for="item in tabs" :key="item.key"
+			      :class="{ active: activeTab === item.key }"
+			      @click="onTabChange(item.key)">
 				<text>{{ item.label }}</text>
 			</view>
 		</view>
 
-		<!-- 排行榜列表 -->
-		<view class=\"list\" v-if=\"!loading\">
-			<view class=\"rank-item\" v-for=\"item in leaderboard\" :key=\"item.userId\">
-				<view class=\"rank-num\" :class=\"{ top3: item.rank <= 3 }\">{{ item.rank }}</view>
-				<view class=\"rank-info\">
-					<text class=\"rank-name\">{{ item.nickname || '匿名用户' }}</text>
-					<view class=\"rank-stats\">
-						<text class=\"stat\">正确率 {{ item.accuracy }}%</text>
-						<text class=\"stat\">平均 {{ item.avgTime.toFixed(1) }}s/题</text>
+		<view class="list" v-if="!loading">
+			<view class="rank-item" v-for="item in leaderboard" :key="item.userId">
+				<view class="rank-num" :class="{ top3: item.rank <= 3 }">{{ item.rank }}</view>
+				<view class="rank-info">
+					<text class="rank-name">{{ item.nickname || '匿名用户' }}</text>
+					<view class="rank-stats">
+						<text class="stat">正确率 {{ item.accuracy }}%</text>
+						<text class="stat">平均 {{ item.avgTime.toFixed(1) }}s/题</text>
 					</view>
 				</view>
 			</view>
 		</view>
 
-		<view class=\"empty\" v-if=\"!loading && leaderboard.length === 0\">
+		<view class="empty" v-if="!loading && leaderboard.length === 0">
 			<text>暂无数据，快来答题吧！</text>
 		</view>
 	</view>
 </template>
 
-<script>
+<script setup>
+import { ref, onShow } from 'vue'
 import api from '@/utils/api.js'
 
-export default {
-	data() {
-		return {
-			activeTab: 'COMMONSENSE',
-			tabs: [
-				{ key: 'COMMONSENSE', label: '📚 常识排行' },
-				{ key: 'LOGIC', label: '🧩 逻辑排行' }
-			],
-			leaderboard: [],
-			loading: false
-		}
-	},
-	onShow() {
-		this.loadLeaderboard()
-	},
-	methods: {
-		onTabChange(type) {
-			this.activeTab = type
-			this.loadLeaderboard()
-		},
-		loadLeaderboard() {
-			this.loading = true
-			api.getLeaderboard(this.activeTab).then(data => {
-				this.leaderboard = data
-				this.loading = false
-			}).catch(err => {
-				uni.showToast({ title: '加载失败', icon: 'none' })
-				this.loading = false
-			})
-		}
-	}
+const activeTab = ref('COMMONSENSE')
+const tabs = [
+	{ key: 'COMMONSENSE', label: '📚 常识排行' },
+	{ key: 'LOGIC', label: '🧩 逻辑排行' }
+]
+const leaderboard = ref([])
+const loading = ref(false)
+
+onShow(() => {
+	loadLeaderboard()
+})
+
+function onTabChange(type) {
+	activeTab.value = type
+	loadLeaderboard()
+}
+
+function loadLeaderboard() {
+	loading.value = true
+	api.getLeaderboard(activeTab.value).then(data => {
+		leaderboard.value = data
+		loading.value = false
+	}).catch(err => {
+		uni.showToast({ title: '加载失败', icon: 'none' })
+		loading.value = false
+	})
 }
 </script>
 

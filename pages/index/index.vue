@@ -39,68 +39,65 @@
 	</view>
 </template>
 
-<script>
+<script setup>
+import { ref, onMounted } from 'vue'
 import api from '@/utils/api.js'
 
-export default {
-	data() {
-		return {
-			userInfo: null,
-			userId: null,
-			isLoggedIn: false,
-			loginLoading: false
-		}
-	},
-	onLoad() {
-		this.checkLogin()
-	},
-	methods: {
-		checkLogin() {
-			const app = getApp()
-			if (app.globalData.userId) {
-				this.userId = app.globalData.userId
-				this.userInfo = app.globalData.userInfo
-				this.isLoggedIn = true
-			}
-		},
-		onLogin() {
-			this.loginLoading = true
-			uni.login({
-				provider: 'weixin',
-				success: (res) => {
-					api.login().then(data => {
-						const app = getApp()
-						app.globalData.userId = data.userId
-						app.globalData.userInfo = {
-							nickname: data.nickname || '用户',
-							avatar: data.avatar || ''
-						}
-						this.userId = data.userId
-						this.userInfo = app.globalData.userInfo
-						this.isLoggedIn = true
-						this.loginLoading = false
-						uni.showToast({ title: '登录成功', icon: 'success' })
-					}).catch(err => {
-						this.loginLoading = false
-						uni.showToast({ title: '登录失败', icon: 'none' })
-						console.error(err)
-					})
-				},
-				fail: (err) => {
-					this.loginLoading = false
-					uni.showToast({ title: '登录失败', icon: 'none' })
-					console.error(err)
+const userInfo = ref(null)
+const userId = ref(null)
+const isLoggedIn = ref(false)
+const loginLoading = ref(false)
+
+const app = getApp()
+
+onMounted(() => {
+	checkLogin()
+})
+
+function checkLogin() {
+	if (app.globalData.userId) {
+		userId.value = app.globalData.userId
+		userInfo.value = app.globalData.userInfo
+		isLoggedIn.value = true
+	}
+}
+
+function onLogin() {
+	loginLoading.value = true
+	uni.login({
+		provider: 'weixin',
+		success: (res) => {
+			api.login().then(data => {
+				app.globalData.userId = data.userId
+				app.globalData.userInfo = {
+					nickname: data.nickname || '用户',
+					avatar: data.avatar || ''
 				}
+				userId.value = data.userId
+				userInfo.value = app.globalData.userInfo
+				isLoggedIn.value = true
+				loginLoading.value = false
+				uni.showToast({ title: '登录成功', icon: 'success' })
+			}).catch(err => {
+				loginLoading.value = false
+				uni.showToast({ title: '登录失败', icon: 'none' })
+				console.error(err)
 			})
 		},
-		onStartQuiz() {
-			if (!this.isLoggedIn) {
-				uni.showToast({ title: '请先登录', icon: 'none' })
-				return
-			}
-			uni.navigateTo({ url: '/pages/quiz/quiz' })
+		fail: (err) => {
+			loginLoading.value = false
+			uni.showToast({ title: '登录失败', icon: 'none' })
+			console.error(err)
 		}
+	})
+}
+
+function onStartQuiz() {
+	if (!isLoggedIn.value) {
+		uni.showToast({ title: '请先登录', icon: 'none' })
+		return
 	}
+	uni.navigateTo({ url: '/pages/quiz/quiz' })
 }
 </script>
 
